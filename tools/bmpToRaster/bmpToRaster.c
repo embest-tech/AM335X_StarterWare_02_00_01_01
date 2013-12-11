@@ -74,7 +74,11 @@ int main(int argc,char *argv[])
 		exit(1);
 	}
 	/* Try to open the file now */
+#if defined (__WIN32__)
+	fd = open(argv[3],O_RDONLY | O_BINARY);
+#else
 	fd = open(argv[3],O_RDONLY);
+#endif
 	if(fd < 0)
 	{
 		printf("\n BMP reader failed to open file\n");

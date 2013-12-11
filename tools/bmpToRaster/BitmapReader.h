@@ -51,7 +51,7 @@
 #define BMPREADER_SUCCESS		0
 #define BMPREADER_FAILURE		-1
 
-#define COMPRESS
+//#define COMPRESS
 
 typedef enum BmpFormat
 {

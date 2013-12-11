@@ -61,7 +61,7 @@
 #include "string.h"
 #ifdef evmAM335x
     #include "hw_tps65910.h"
-#elif  (defined beaglebone)
+#elif  (defined beaglebone || defined bbblack)
     #include "hw_tps65217.h"
 #elif  (defined evmskAM335x)
     #include "hw_tps65910.h"
@@ -196,6 +196,65 @@
 
 #define DDR3_EMIF_SDRAM_REF_CTRL_VAL1      (0x0000093B)
 #define DDR3_EMIF_SDRAM_REF_CTRL_SHDW_VAL1 (0x0000093B)
+
+#define DDR3_EMIF_ZQ_CONFIG_VAL            (0x50074BE4)
+
+/*
+** termination = 1 (RZQ/4)
+** dynamic ODT = 2 (RZQ/2)
+** SDRAM drive = 0 (RZQ/6)
+** CWL = 0 (CAS write latency = 5)
+** CL = 2 (CAS latency = 5)
+** ROWSIZE = 7 (16 row bits)
+** PAGESIZE = 2 (10 column bits)
+*/
+#define DDR3_EMIF_SDRAM_CONFIG             (0x61C04BB2)
+
+#elif defined(bbblack)
+
+#define DDR3_CMD0_SLAVE_RATIO_0            (0x80)
+#define DDR3_CMD0_INVERT_CLKOUT_0          (0x0)
+#define DDR3_CMD1_SLAVE_RATIO_0            (0x80)
+#define DDR3_CMD1_INVERT_CLKOUT_0          (0x0)
+#define DDR3_CMD2_SLAVE_RATIO_0            (0x80)
+#define DDR3_CMD2_INVERT_CLKOUT_0          (0x0)
+
+#define DDR3_DATA0_RD_DQS_SLAVE_RATIO_0    (0x38)
+#define DDR3_DATA0_WR_DQS_SLAVE_RATIO_0    (0x44)
+#define DDR3_DATA0_FIFO_WE_SLAVE_RATIO_0   (0x94)
+#define DDR3_DATA0_WR_DATA_SLAVE_RATIO_0   (0x7D)
+
+#define DDR3_DATA0_RD_DQS_SLAVE_RATIO_1    (0x38)
+#define DDR3_DATA0_WR_DQS_SLAVE_RATIO_1    (0x44)
+#define DDR3_DATA0_FIFO_WE_SLAVE_RATIO_1   (0x94)
+#define DDR3_DATA0_WR_DATA_SLAVE_RATIO_1   (0x7D)
+
+#define DDR3_CONTROL_DDR_CMD_IOCTRL_0      (0x18B)
+#define DDR3_CONTROL_DDR_CMD_IOCTRL_1      (0x18B)
+#define DDR3_CONTROL_DDR_CMD_IOCTRL_2      (0x18B)
+
+#define DDR3_CONTROL_DDR_DATA_IOCTRL_0      (0x18B)
+#define DDR3_CONTROL_DDR_DATA_IOCTRL_1      (0x18B)
+
+#define DDR3_CONTROL_DDR_IO_CTRL           (0xefffffff)
+
+#define DDR3_EMIF_DDR_PHY_CTRL_1           (0x06)
+#define DDR3_EMIF_DDR_PHY_CTRL_1_DY_PWRDN         (0x00100000)
+#define DDR3_EMIF_DDR_PHY_CTRL_1_SHDW      (0x06)
+#define DDR3_EMIF_DDR_PHY_CTRL_1_SHDW_DY_PWRDN    (0x00100000)
+#define DDR3_EMIF_DDR_PHY_CTRL_2           (0x06)
+
+#define DDR3_EMIF_SDRAM_TIM_1              (0x0AAAD4DB)
+#define DDR3_EMIF_SDRAM_TIM_1_SHDW         (0x0AAAD4DB)
+
+#define DDR3_EMIF_SDRAM_TIM_2              (0x266B7FDA)
+#define DDR3_EMIF_SDRAM_TIM_2_SHDW         (0x266B7FDA)
+
+#define DDR3_EMIF_SDRAM_TIM_3              (0x501F867F)
+#define DDR3_EMIF_SDRAM_TIM_3_SHDM         (0x501F867F)
+
+#define DDR3_EMIF_SDRAM_REF_CTRL_VAL1      (0x00000C30)
+#define DDR3_EMIF_SDRAM_REF_CTRL_SHDW_VAL1 (0x00000C30)
 
 #define DDR3_EMIF_ZQ_CONFIG_VAL            (0x50074BE4)
 
@@ -388,6 +447,8 @@ unsigned int BootMaxOppGet(void)
 {
     unsigned int oppIdx;
     unsigned int oppSupport = SysConfigOppDataGet();
+
+    return OPP_NONE;
 
     if(DEVICE_VERSION_1_0 == deviceVersion)
     {
@@ -929,7 +990,7 @@ void SetupReception(unsigned int dcount)
  *
  * \return dest     -  Place holder for read bytes.
  */
-#ifdef beaglebone
+#if defined beaglebone || defined bbblack
 
 void TPS65217RegRead(unsigned char regOffset, unsigned char* dest)
 {
@@ -1245,7 +1306,7 @@ void SelectVdd1Source(unsigned int vddSource)
  */
 void SetVdd1OpVoltage(unsigned int opVolSelector)
 {
-#ifdef beaglebone
+#if defined beaglebone || defined bbblack
 
     /* Set DCDC2 (MPU) voltage */
     TPS65217VoltageUpdate(DEFDCDC2, opVolSelector);
@@ -1297,7 +1358,7 @@ void ConfigVddOpVoltage(void)
 {
     SetupI2C();
 
-#ifdef beaglebone
+#if defined beaglebone || defined bbblack
 
     unsigned char pmic_status = 0;
 
@@ -1390,6 +1451,47 @@ static void DDR2PhyInit(void)
     HWREG(DATA1_FIFO_WE_SLAVE_RATIO_0) = DDR2_DATA1_FIFO_WE_SLAVE_RATIO_0;
     HWREG(DATA1_WR_DATA_SLAVE_RATIO_0) = DDR2_DATA1_WR_DATA_SLAVE_RATIO_0;
 }
+
+/*
+ * \brief This function sets up the DDR PHY of BeagleBone Black
+ *
+ * \param  none
+ *
+ * \return none
+ */
+static void BBBlack_DDR3PhyInit(void)
+{
+    /* Enable VTP */
+    HWREG(SOC_CONTROL_REGS + CONTROL_VTP_CTRL) |= CONTROL_VTP_CTRL_ENABLE;
+    HWREG(SOC_CONTROL_REGS + CONTROL_VTP_CTRL) &= ~CONTROL_VTP_CTRL_CLRZ;
+    HWREG(SOC_CONTROL_REGS + CONTROL_VTP_CTRL) |= CONTROL_VTP_CTRL_CLRZ;
+    while((HWREG(SOC_CONTROL_REGS + CONTROL_VTP_CTRL) & CONTROL_VTP_CTRL_READY) !=
+                CONTROL_VTP_CTRL_READY);
+
+    /* DDR PHY CMD0 Register configuration */
+    HWREG(CMD0_SLAVE_RATIO_0)   = DDR3_CMD0_SLAVE_RATIO_0;
+    HWREG(CMD0_INVERT_CLKOUT_0) = DDR3_CMD0_INVERT_CLKOUT_0;
+
+    /* DDR PHY CMD1 Register configuration */
+    HWREG(CMD1_SLAVE_RATIO_0)   = DDR3_CMD1_SLAVE_RATIO_0;
+    HWREG(CMD1_INVERT_CLKOUT_0) = DDR3_CMD1_INVERT_CLKOUT_0;
+
+    /* DDR PHY CMD2 Register configuration */
+    HWREG(CMD2_SLAVE_RATIO_0)   = DDR3_CMD2_SLAVE_RATIO_0;
+    HWREG(CMD2_INVERT_CLKOUT_0) = DDR3_CMD2_INVERT_CLKOUT_0;
+
+    /* DATA macro configuration */
+    HWREG(DATA0_RD_DQS_SLAVE_RATIO_0)  = DDR3_DATA0_RD_DQS_SLAVE_RATIO_0;
+    HWREG(DATA0_WR_DQS_SLAVE_RATIO_0)  = DDR3_DATA0_WR_DQS_SLAVE_RATIO_0;
+    HWREG(DATA0_FIFO_WE_SLAVE_RATIO_0) = DDR3_DATA0_FIFO_WE_SLAVE_RATIO_0;
+    HWREG(DATA0_WR_DATA_SLAVE_RATIO_0) = DDR3_DATA0_WR_DATA_SLAVE_RATIO_0;
+    HWREG(DATA1_RD_DQS_SLAVE_RATIO_0)  = DDR3_DATA0_RD_DQS_SLAVE_RATIO_1;
+    HWREG(DATA1_WR_DQS_SLAVE_RATIO_0)  = DDR3_DATA0_WR_DQS_SLAVE_RATIO_1;
+    HWREG(DATA1_FIFO_WE_SLAVE_RATIO_0) = DDR3_DATA0_FIFO_WE_SLAVE_RATIO_1;
+    HWREG(DATA1_WR_DATA_SLAVE_RATIO_0) = DDR3_DATA0_WR_DATA_SLAVE_RATIO_1;
+
+}
+
 /*
  * \brief This function sets up the DDR PHY
  *
@@ -1430,6 +1532,76 @@ static void DDR3PhyInit(void)
 
 }
 
+/* \brief This function initializes the DDR3 of BeagleBone Black
+ * 
+ * \param none
+ *
+ * \return none
+ *
+ */
+void BBBlack_DDR3Init(void)
+{
+    /* DDR3 Phy Initialization */
+    BBBlack_DDR3PhyInit();
+
+    HWREG(SOC_CONTROL_REGS + CONTROL_DDR_CMD_IOCTRL(0)) =
+                                                 DDR3_CONTROL_DDR_CMD_IOCTRL_0;
+    HWREG(SOC_CONTROL_REGS + CONTROL_DDR_CMD_IOCTRL(1)) =
+                                                 DDR3_CONTROL_DDR_CMD_IOCTRL_1;
+    HWREG(SOC_CONTROL_REGS + CONTROL_DDR_CMD_IOCTRL(2)) =
+                                                 DDR3_CONTROL_DDR_CMD_IOCTRL_2;
+    HWREG(SOC_CONTROL_REGS + CONTROL_DDR_DATA_IOCTRL(0)) =
+                                                 DDR3_CONTROL_DDR_DATA_IOCTRL_0;
+    HWREG(SOC_CONTROL_REGS + CONTROL_DDR_DATA_IOCTRL(1)) =
+                                                 DDR3_CONTROL_DDR_DATA_IOCTRL_1;
+
+    /* IO to work for DDR3 */
+    HWREG(SOC_CONTROL_REGS + CONTROL_DDR_IO_CTRL) &= DDR3_CONTROL_DDR_IO_CTRL;
+
+    HWREG(SOC_CONTROL_REGS + CONTROL_DDR_CKE_CTRL) |= CONTROL_DDR_CKE_CTRL_DDR_CKE_CTRL;
+
+    HWREG(SOC_EMIF_0_REGS + EMIF_DDR_PHY_CTRL_1) = DDR3_EMIF_DDR_PHY_CTRL_1;
+
+    /* Dynamic Power Down */
+    if((DEVICE_VERSION_2_0 == deviceVersion) ||
+       (DEVICE_VERSION_2_1 == deviceVersion))
+    {
+        HWREG(SOC_EMIF_0_REGS + EMIF_DDR_PHY_CTRL_1) |=
+                                              DDR3_EMIF_DDR_PHY_CTRL_1_DY_PWRDN;
+    }
+
+    HWREG(SOC_EMIF_0_REGS + EMIF_DDR_PHY_CTRL_1_SHDW) =
+                                                 DDR3_EMIF_DDR_PHY_CTRL_1_SHDW;
+
+    /* Dynamic Power Down */
+    if((DEVICE_VERSION_2_0 == deviceVersion) ||
+       (DEVICE_VERSION_2_1 == deviceVersion))
+    {
+        HWREG(SOC_EMIF_0_REGS + EMIF_DDR_PHY_CTRL_1_SHDW) |=
+                                         DDR3_EMIF_DDR_PHY_CTRL_1_SHDW_DY_PWRDN;
+    }
+
+    HWREG(SOC_EMIF_0_REGS + EMIF_DDR_PHY_CTRL_2) = DDR3_EMIF_DDR_PHY_CTRL_2;
+
+    HWREG(SOC_EMIF_0_REGS + EMIF_SDRAM_TIM_1)      = DDR3_EMIF_SDRAM_TIM_1;
+    HWREG(SOC_EMIF_0_REGS + EMIF_SDRAM_TIM_1_SHDW) = DDR3_EMIF_SDRAM_TIM_1_SHDW;
+    HWREG(SOC_EMIF_0_REGS + EMIF_SDRAM_TIM_2)      = DDR3_EMIF_SDRAM_TIM_2;
+    HWREG(SOC_EMIF_0_REGS + EMIF_SDRAM_TIM_2_SHDW) = DDR3_EMIF_SDRAM_TIM_2_SHDW;
+    HWREG(SOC_EMIF_0_REGS + EMIF_SDRAM_TIM_3)      = DDR3_EMIF_SDRAM_TIM_3;
+    HWREG(SOC_EMIF_0_REGS + EMIF_SDRAM_TIM_3_SHDW) = DDR3_EMIF_SDRAM_TIM_3_SHDM;
+
+    HWREG(SOC_EMIF_0_REGS + EMIF_SDRAM_REF_CTRL)   = DDR3_EMIF_SDRAM_REF_CTRL_VAL1;
+    HWREG(SOC_EMIF_0_REGS + EMIF_SDRAM_REF_CTRL_SHDW) =
+                                                 DDR3_EMIF_SDRAM_REF_CTRL_SHDW_VAL1;
+
+    HWREG(SOC_EMIF_0_REGS + EMIF_ZQ_CONFIG)     = DDR3_EMIF_ZQ_CONFIG_VAL;
+    HWREG(SOC_EMIF_0_REGS + EMIF_SDRAM_CONFIG)     = DDR3_EMIF_SDRAM_CONFIG;
+	
+    /* The CONTROL_SECURE_EMIF_SDRAM_CONFIG register exports SDRAM configuration 
+       information to the EMIF */
+    HWREG(SOC_CONTROL_REGS + CONTROL_SECURE_EMIF_SDRAM_CONFIG) = DDR3_EMIF_SDRAM_CONFIG;
+
+}
 
 /* \brief This function initializes the DDR2
  * 
@@ -1852,7 +2024,7 @@ void BlPlatformConfig(void)
     while(HWREG(SOC_WDT_1_REGS + WDT_WWPS) != 0x00);
 
     /* Configure DDR frequency */
-#ifdef evmskAM335x
+#if defined evmskAM335x || defined bbblack
     freqMultDDR = DDRPLL_M_DDR3;
 #elif evmAM335x
     if(BOARD_ID_EVM_DDR3 == BoardIdGet())
@@ -1883,7 +2055,9 @@ void BlPlatformConfig(void)
     /* Enable DDR_VTT */
     DDRVTTEnable();
     DDR3Init();
-#elif evmAM335x
+#elif defined bbblack
+    BBBlack_DDR3Init();
+#elif defined evmAM335x
     if(BOARD_ID_EVM_DDR3 == BoardIdGet())
     {
         DDR3Init();

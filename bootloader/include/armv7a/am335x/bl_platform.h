@@ -48,6 +48,8 @@
     #include "evmAM335x.h"
 #elif  (defined beaglebone)
     #include "beaglebone.h"
+#elif  (defined bbblack)
+    #include "bbblack.h"
 #elif  (defined evmskAM335x)
     #include "evmskAM335x.h"
 #endif    
@@ -119,7 +121,6 @@
     #define NAND_WRACCESSTIME              (22)
 
 #elif defined(MMCSD)
-
     #define MMCSD_BASE                     SOC_MMCHS_0_REGS
     #define MMCSD_DMA_BASE                 SOC_EDMA30CC_0_REGS
 
@@ -182,7 +183,7 @@
 ** MACROS to configure SEL bit filed in VDD1_OP_REG of PMIC.
 ** Refer the datasheet of PMIC for voltage values.
 */
-#if (defined beaglebone)
+#if defined (beaglebone) || defined (bbblack)
 
 #define     PMIC_VOLT_SEL_0950MV      DCDC_VOLT_SEL_0950MV
 #define     PMIC_VOLT_SEL_1100MV      DCDC_VOLT_SEL_1100MV
