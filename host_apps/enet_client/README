@@ -1,0 +1,25 @@
+/***************************************************************************
+                              ETHERNET-ECHO 
+****************************************************************************/
+
+BRIEF:- Client will send data to server and same data will be echoed
+-----   back by server. The data received and sent are compared. If
+        received data is same as sent data, then success message is
+        displayed. Otherwise an error message is displayed.
+
+        Note that both client.c and data.txt should in same directory
+
+
+EXECUTION
+---------
+Note that before running the client program run the server and note down
+the ip announced by the server on serial console.
+
+1. Copy client.c and data.txt to the linux host machine.
+
+2. Compile the client program
+               $gcc client.c -o client
+
+3. Run the executable
+               $./client  <ip-address-announced-by-the-server>
+

@@ -1,0 +1,23 @@
+The bmpToRaster converts a BMP image to a header file with raw information.
+For 480x800 images, the generated header file will be compressed one.
+
+Compression:
+In the generated file,
+The three Least Significant Bytes will indicate the pixel value. 
+The Most Significant Byte of a word will indicate the number of times the pixel repeats
+in the image. This is only valid if the number is <256.
+If the number is >255, the number of pixels will be stored in the next WORD.
+Eg: If pixel value AABBCC is repeated 8 times, then PPQQRR is repeated for 10000 times,
+The generated file would contain the following representation for pixel values. 
+0x08AABBCC, 0xPQQRR, 0x2710
+
+
+Steps For Getting the header file:
+
+Step 1: Build the application using 'make' command
+$make
+
+Step 2: Get .h file from a .bmp file.
+$./a.out <No.of ROWS> <No.of Columns> <Source File Name> <Destination File name> <image format required 565/24><pixel odering RGB/BGR>
+
+

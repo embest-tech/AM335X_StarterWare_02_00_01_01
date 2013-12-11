@@ -1,0 +1,268 @@
+/*
+ * style.css
+ *
+ * Basic layout applied to the the web page content.
+ *
+ * Copyright (C) 2011 Texas Instruments Incorporated - http://www.ti.com/
+ *
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *    Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ *    Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
+ *    distribution.
+ *
+ *    Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+*
+{
+	margin : 0px;
+	padding : 0px;
+}
+
+body
+{
+	margin : 0px;
+
+	font-family : Calibri, Verdana, DejaVu Sans, sans-serif;
+	font-size : 1.0em;
+	vertical-align: middle;
+}
+
+a
+{
+	text-decoration : none;
+}
+
+img
+{
+	border : 0;
+}
+
+#logo
+{
+	width : 800px;
+
+	margin : 10px;
+	padding : 5px;
+}
+
+#header
+{
+	width : 800px;
+
+	margin : 10px;
+	padding : 5px 10px;
+
+	border-bottom-style: solid;
+	border-bottom-width: 5px;
+
+	font-size : 1.2em;
+	font-weight : bold;
+}
+
+#footer
+{
+	width : 800px;
+
+	margin : 10px;
+	padding : 5px;
+
+	border-top-style: solid;
+	border-top-width: 2px;
+
+	font-size : 0.9em;
+}
+
+#about
+{
+	width : 800px;
+
+	margin : 20px 10px;
+}
+
+#about p
+{
+	font-size : 1.0em;
+	text-align : justify;
+}
+
+#content
+{
+	width : 810px;
+	height : 480px;
+
+	margin : 10px;
+
+	border-style: solid;
+	border-width: 5px;
+}
+
+#splash
+{
+	position : absolute;
+
+	width : 790px;
+	height : 460px;
+
+	padding : 10px;
+
+	border: none;
+
+	z-index : 2;
+}
+
+#count
+{
+	float : right ;
+
+	font-size : 2.0em;
+
+	z-index : 3;
+}
+
+#splash h2
+{
+	font-size : 1.4em;
+	margin-bottom : 20px;
+}
+
+#splash p
+{
+	font-size : 1.2em;
+	margin-bottom : 5px;
+}
+
+#panel
+{
+	position : absolute;
+
+	width : 790px;
+	height : 460px;
+
+	padding : 10px;
+
+	border: none;
+
+	z-index : 5;
+}
+
+#p_hdr
+{
+	width : 700px;
+	height : 49px;
+
+	margin : 70px 50px 0px 50px;
+
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+
+	border-bottom : 1px dotted #aaaaaa;
+}
+
+#p_txt
+{
+	width : 700px;
+	height : 280px;
+
+	margin : 0px 50px 0px 50px;
+	padding : 5px;
+}
+
+#p_ftr
+{
+	width : 700px;
+	height : 49px;
+
+	margin : 0px 50px 30px 50px;
+
+	border-top-style: solid;
+	border-top-width: 1px;
+}
+
+a.prev
+{
+	float: left;
+}
+
+a.next
+{
+	float: right;
+}
+
+#demo
+{
+	width : 790px;
+	height : 420px;
+
+	padding : 10px;
+
+	border: none;
+}
+
+#demo table
+{
+	margin : 40px;
+
+	width : 700px;
+	height : 380px;
+}
+
+#tip
+{
+	width : 790px;
+	height : 20px;
+
+	padding :10px;
+
+	border: none;
+}
+
+input[type=submit].active
+{
+	width : 120px;
+	height : 80px;
+
+	border-style: none;
+
+	font-family : Calibri, Verdana, DejaVu Sans, sans-serif;
+	font-weight : bold;
+	font-size : 1.2em;
+
+	cursor : pointer;
+}
+
+input[type=submit].inactive
+{
+	width : 120px;
+	height : 80px;
+
+	border-style: none;
+
+	font-family : Calibri, Verdana, DejaVu Sans, sans-serif;
+	font-weight : bold;
+	font-size : 1.2em;
+
+	cursor : help;
+}
